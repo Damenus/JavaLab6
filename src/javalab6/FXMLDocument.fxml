@@ -12,7 +12,7 @@
         <VBox prefHeight="400.0" prefWidth="400.0">
             <TableView fx:id="photoTableView" prefHeight="200.0" prefWidth="200.0">
                 <columns>
-                    <TableColumn prefWidth="150.0" text="name" fx:id="nameColumn">
+                    <TableColumn prefWidth="150.0" text="name" fx:id="imageNameColumn">
                         <cellValueFactory>
                             <PropertyValueFactory property="name" />
                         </cellValueFactory>
@@ -38,8 +38,9 @@
                      <children>
                         <Label text="New Name" />  
                         <TextField fx:id="numberField" prefWidth="100.0"  />                                              
-                        <Button mnemonicParsing="false" prefWidth="100.0" text="Add photo" />
-                        <Button mnemonicParsing="false" prefWidth="100.0" text="Start" />  
+                        <Button mnemonicParsing="false" prefWidth="100.0" text="Add photo" onAction="#chooseFileAction" />
+                        <Button mnemonicParsing="false" prefWidth="100.0" text="Select the destination folder " onAction="#chooseDestinationDirectoryAction" />
+                        <Button mnemonicParsing="false" prefWidth="100.0" text="Start" onAction="#processFiles" />  
                     </children>
                 </VBox>    
             </children>
