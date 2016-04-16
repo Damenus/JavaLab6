@@ -12,11 +12,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ForkJoinPool;
-import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -32,6 +30,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.ProgressBarTableCell;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.util.converter.IntegerStringConverter;
 import javax.imageio.ImageIO;
 
 /**
@@ -104,13 +103,16 @@ public class FXMLDocumentController implements Initializable {
     }
 
     @FXML
-    void processFiles2(ActionEvent event) {
+    void processFiles(ActionEvent event) {
         new Thread(this::backgroundJob).start();
     }
     
     @FXML
-    void processFiles(ActionEvent event) {
-        ForkJoinPool pool = new ForkJoinPool(4);
+    void processParallelFiles(ActionEvent event) {
+        IntegerStringConverter conv = new IntegerStringConverter();        
+        int numberOfThread = conv.fromString(numberField.textProperty().getValue());
+        
+        ForkJoinPool pool = new ForkJoinPool(numberOfThread);
         pool.submit(this::backgroundParallelJob);      
     }
     
@@ -119,26 +121,33 @@ public class FXMLDocumentController implements Initializable {
         long start = System.currentTimeMillis(); //zwraca aktualny czas
         
         photoList.stream().forEach((photo) -> {
-            convertToGrayscale(photo.getFile(), this.outputDir, photo.getProgressProperty());
+            if(photo.getProgressProperty().get() != 1.0)
+                convertToGrayscale(photo.getFile(), this.outputDir, photo.getProgressProperty());
         });
         
         long end = System.currentTimeMillis(); //czas po zakończeniu operacji
         long duration = end-start; //czas przetwarzania
-        System.out.print(duration);
+        System.out.println("Sequential mode time: " + duration + "ms");
         
     }
     
     private void backgroundParallelJob(){
-        long start = System.currentTimeMillis(); //zwraca aktualny czas
+        long start = System.currentTimeMillis(); 
         
         photoList.parallelStream().forEach((photo) -> {
-            convertToGrayscale(photo.getFile(), this.outputDir, photo.getProgressProperty());
+            if(photo.getProgressProperty().get() != 1.0)
+                convertToGrayscale(photo.getFile(), this.outputDir, photo.getProgressProperty());
         });
         
-        long end = System.currentTimeMillis(); //czas po zakończeniu operacji
-        long duration = end-start; //czas przetwarzania
-        System.out.print(duration);
+        long end = System.currentTimeMillis(); 
+        long duration = end-start; 
+        System.out.println("Parallel " + numberField.textProperty().getValue()  + " threads mode time: " + duration + "ms");
         
+    }
+    
+    @FXML
+    private void claerPhotoAction() {
+        photoList.clear();
     }
         
     private void convertToGrayscale(File orginalFile, File outputDir, DoubleProperty progressProp) {

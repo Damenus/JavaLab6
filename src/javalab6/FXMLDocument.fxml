@@ -40,9 +40,11 @@
                         <Button mnemonicParsing="false" prefWidth="100.0" text="Select the destination folder " onAction="#chooseDestinationDirectoryAction" />
                         <Label text="The destination folder:" /> 
                         <Label fx:id="desttinationLabel" text="" /> 
+                        <Button mnemonicParsing="false" prefWidth="100.0" text="Start" onAction="#processFiles" />  
                         <Label text="Number of thread" />  
                         <TextField fx:id="numberField" prefWidth="30.0"  />  
-                        <Button mnemonicParsing="false" prefWidth="100.0" text="Start" onAction="#processFiles" />  
+                        <Button mnemonicParsing="false" prefWidth="100.0" text="Start" onAction="#processParallelFiles" />   
+                        <Button mnemonicParsing="false" prefWidth="100.0" text="Clear table" onAction="#claerPhotoAction" />                        
                     </children>
                 </VBox>    
             </children>

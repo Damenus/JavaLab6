@@ -11,8 +11,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 /**
  *
@@ -32,7 +30,18 @@ public class ImageProcessingJob {
     public ImageProcessingJob(File file) {
         this.file = file;
         this.progress.set(0.0);
-        this.status.set("P");
+        this.status.set("waiting");
+        this.progress.addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                if(progress.get() > 0.0) {
+                    status.set("processing...");
+                } else if (progress.get() >= 1.0) {
+                    status.set("completed");
+                }
+            }             
+        });
+        
     }
 
     public File getFile() {
@@ -41,18 +50,6 @@ public class ImageProcessingJob {
     
     public SimpleStringProperty getStatusProperty() {        
         return this.status;
-    }
-
-    public ObservableValue<String> getStatusProperty2() {
-        ObservableValue<String> result = null;
-        result.addListener(new ChangeListener<String>() {        
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                 //result.set((ObservableList<String>) newValue.);
-            }
-        });
-        
-        return result;
     }
 
     public DoubleProperty getProgressProperty() {
