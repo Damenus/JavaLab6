@@ -5,11 +5,18 @@
  */
 package javalab6;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,6 +26,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ProgressBarTableCell;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -48,6 +56,8 @@ public class FXMLDocumentController implements Initializable {
         p -> p.getValue().getProgressProperty().asObject());
         progressColumn.setCellFactory( //wykorzystanie paska postępu
         ProgressBarTableCell.<ImageProcessingJob>forTableColumn());
+        
+        
     }    
     
     @FXML
@@ -60,6 +70,8 @@ public class FXMLDocumentController implements Initializable {
         
         for (File file:selectedFiles)
             photoList.add(new ImageProcessingJob(file));
+        
+        
     }
     
    @FXML 
@@ -70,7 +82,6 @@ public class FXMLDocumentController implements Initializable {
       
     }
 
-    //metoda obsługująca kliknięcie przycisku rozpoczynającego przetwarzanie
     @FXML
     void processFiles(ActionEvent event) {
         new Thread(this::backgroundJob).start();
@@ -80,5 +91,35 @@ public class FXMLDocumentController implements Initializable {
     private void backgroundJob(){
         //operacje w tle
     }
+    
+    private void convertToGrayscale(File orginalFile, File outputDir, DoubleProperty progressProp) {
+           try {
+               BufferedImage orginal = ImageIO.read(orginalFile);
+               
+               BufferedImage greyscale = new BufferedImage(orginal.getWidth(), orginal.getHeight(), orginal.getType());
+               
+               for(int i = 0; i < orginal.getWidth(); i++) {
+                   for(int j = 0; j < orginal.getHeight(); j++) {
+                       int red = new Color(orginal.getRGB(i, j)).getRed();
+                       int green = new Color(orginal.getRGB(i, j)).getGreen();
+                       int blue = new Color(orginal.getRGB(i, j)).getBlue();
+                       
+                       int luminosity = (int) (0.21*red + 0.71*green + 0.07* blue);                       
+                       int newPixel = new Color(luminosity,luminosity,luminosity).getRGB();                       
+                       greyscale.setRGB(i, j, newPixel);                       
+                   }
+                   double progress = (1.0 + i)/orginal.getWidth();
+                   Platform.runLater(() -> progressProp.set(progress));
+               }
+               
+               Path outputPath = Paths.get(outputDir.getAbsolutePath(), orginalFile.getName());
+               ImageIO.write(greyscale, "jpg", outputPath.toFile());              
+                          
+           } catch (IOException ex) {
+               throw new RuntimeException(ex);
+           }
+   
+    }
+   
     
 }

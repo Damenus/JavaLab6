@@ -32,7 +32,7 @@
         </VBox>
     </center>
     <right>
-        <VBox prefHeight="200.0" prefWidth="100.0">
+        <VBox prefHeight="400.0" prefWidth="200.0">
              <children>
                  <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
@@ -40,6 +40,8 @@
                         <TextField fx:id="numberField" prefWidth="100.0"  />                                              
                         <Button mnemonicParsing="false" prefWidth="100.0" text="Add photo" onAction="#chooseFileAction" />
                         <Button mnemonicParsing="false" prefWidth="100.0" text="Select the destination folder " onAction="#chooseDestinationDirectoryAction" />
+                        <Label text="The destination folder:" /> 
+                        <Label fx:id="desttinationLabel" text="" /> 
                         <Button mnemonicParsing="false" prefWidth="100.0" text="Start" onAction="#processFiles" />  
                     </children>
                 </VBox>    
