@@ -15,6 +15,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ForkJoinPool;
+import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -26,6 +28,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.ProgressBarTableCell;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -39,6 +42,8 @@ public class FXMLDocumentController implements Initializable {
     
     @FXML
     Label desttinationLabel;
+    @FXML
+    TextField numberField;
     
     @FXML 
     TableColumn<ImageProcessingJob, String> imageNameColumn;
@@ -66,6 +71,10 @@ public class FXMLDocumentController implements Initializable {
         ProgressBarTableCell.<ImageProcessingJob>forTableColumn());
         
         photoTableView.setItems(photoList);
+        
+        outputDir = new File("D:/");
+        desttinationLabel.setText("D:/");
+        numberField.setText("2");
     }    
     
     @FXML
@@ -80,8 +89,7 @@ public class FXMLDocumentController implements Initializable {
             selectedFiles.stream().forEach((file) -> {
                 photoList.add(new ImageProcessingJob(file));
         });
-        
-        
+               
     }
     
    @FXML 
@@ -89,20 +97,50 @@ public class FXMLDocumentController implements Initializable {
         DirectoryChooser directoryChooser = new DirectoryChooser();        
         File file = directoryChooser.showDialog(null);
         
-        outputDir = file;
-        desttinationLabel.setText(file.getAbsolutePath());
+        if(file != null) {
+            outputDir = file;
+            desttinationLabel.setText(file.getAbsolutePath());
+        }
     }
 
     @FXML
-    void processFiles(ActionEvent event) {
+    void processFiles2(ActionEvent event) {
         new Thread(this::backgroundJob).start();
+    }
+    
+    @FXML
+    void processFiles(ActionEvent event) {
+        ForkJoinPool pool = new ForkJoinPool(4);
+        pool.submit(this::backgroundParallelJob);      
     }
     
     //metoda uruchamiana w tle (w tej samej klasie)    
     private void backgroundJob(){
-        //operacje w tle
+        long start = System.currentTimeMillis(); //zwraca aktualny czas
+        
+        photoList.stream().forEach((photo) -> {
+            convertToGrayscale(photo.getFile(), this.outputDir, photo.getProgressProperty());
+        });
+        
+        long end = System.currentTimeMillis(); //czas po zakończeniu operacji
+        long duration = end-start; //czas przetwarzania
+        System.out.print(duration);
+        
     }
     
+    private void backgroundParallelJob(){
+        long start = System.currentTimeMillis(); //zwraca aktualny czas
+        
+        photoList.parallelStream().forEach((photo) -> {
+            convertToGrayscale(photo.getFile(), this.outputDir, photo.getProgressProperty());
+        });
+        
+        long end = System.currentTimeMillis(); //czas po zakończeniu operacji
+        long duration = end-start; //czas przetwarzania
+        System.out.print(duration);
+        
+    }
+        
     private void convertToGrayscale(File orginalFile, File outputDir, DoubleProperty progressProp) {
            try {
                BufferedImage orginal = ImageIO.read(orginalFile);

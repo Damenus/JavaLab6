@@ -7,10 +7,10 @@
 <?import javafx.scene.control.cell.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane id="BorderPane" prefHeight="400" prefWidth="600" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javalab6.FXMLDocumentController">
+<BorderPane id="BorderPane" prefHeight="400" prefWidth="700" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javalab6.FXMLDocumentController">
     <center>
-        <VBox prefHeight="400.0" prefWidth="400.0">
-            <TableView fx:id="photoTableView" prefHeight="200.0" prefWidth="200.0">
+        <VBox prefHeight="400.0" prefWidth="450.0">
+            <TableView fx:id="photoTableView" prefHeight="300.0" prefWidth="450.0">
                 <columns>
                     <TableColumn prefWidth="150.0" text="name" fx:id="imageNameColumn">
                         <cellValueFactory>
@@ -35,13 +35,13 @@
         <VBox prefHeight="400.0" prefWidth="200.0">
              <children>
                  <VBox prefHeight="200.0" prefWidth="100.0">
-                     <children>
-                        <Label text="New Name" />  
-                        <TextField fx:id="numberField" prefWidth="100.0"  />                                              
+                     <children>                                                               
                         <Button mnemonicParsing="false" prefWidth="100.0" text="Add photo" onAction="#chooseFileAction" />
                         <Button mnemonicParsing="false" prefWidth="100.0" text="Select the destination folder " onAction="#chooseDestinationDirectoryAction" />
                         <Label text="The destination folder:" /> 
                         <Label fx:id="desttinationLabel" text="" /> 
+                        <Label text="Number of thread" />  
+                        <TextField fx:id="numberField" prefWidth="30.0"  />  
                         <Button mnemonicParsing="false" prefWidth="100.0" text="Start" onAction="#processFiles" />  
                     </children>
                 </VBox>    

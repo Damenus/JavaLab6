@@ -20,9 +20,9 @@ import javafx.collections.ObservableList;
  */
 public class ImageProcessingJob {
     
-    File file;
-    SimpleStringProperty status = new SimpleStringProperty();  
-    SimpleDoubleProperty progress = new SimpleDoubleProperty();
+    private File file;
+    private SimpleStringProperty status = new SimpleStringProperty();  
+    private SimpleDoubleProperty progress = new SimpleDoubleProperty();
     
     
     public ImageProcessingJob() {
