@@ -18,9 +18,12 @@ import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ProgressBarTableCell;
@@ -34,6 +37,9 @@ import javax.imageio.ImageIO;
  */
 public class FXMLDocumentController implements Initializable {
     
+    @FXML
+    Label desttinationLabel;
+    
     @FXML 
     TableColumn<ImageProcessingJob, String> imageNameColumn;
     @FXML 
@@ -44,7 +50,9 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private TableView photoTableView;
     
-    List<ImageProcessingJob> photoList = new ArrayList();
+    ObservableList<ImageProcessingJob> photoList = FXCollections.observableArrayList();
+    
+    private File outputDir;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -57,19 +65,21 @@ public class FXMLDocumentController implements Initializable {
         progressColumn.setCellFactory( //wykorzystanie paska postępu
         ProgressBarTableCell.<ImageProcessingJob>forTableColumn());
         
-        
+        photoTableView.setItems(photoList);
     }    
     
     @FXML
     private void chooseFileAction(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter filter =
-            new FileChooser.ExtensionFilter("JPG images", "*.jpg");
+        FileChooser.ExtensionFilter filter =  new FileChooser.ExtensionFilter("JPG images", "*.jpg");
+        
         fileChooser.getExtensionFilters().add(filter);
         List<File> selectedFiles = fileChooser.showOpenMultipleDialog(null);
         
-        for (File file:selectedFiles)
-            photoList.add(new ImageProcessingJob(file));
+        if(selectedFiles != null)
+            selectedFiles.stream().forEach((file) -> {
+                photoList.add(new ImageProcessingJob(file));
+        });
         
         
     }
@@ -79,7 +89,8 @@ public class FXMLDocumentController implements Initializable {
         DirectoryChooser directoryChooser = new DirectoryChooser();        
         File file = directoryChooser.showDialog(null);
         
-      
+        outputDir = file;
+        desttinationLabel.setText(file.getAbsolutePath());
     }
 
     @FXML

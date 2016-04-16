@@ -7,6 +7,7 @@ package javalab6;
 
 import java.io.File;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -21,7 +22,7 @@ public class ImageProcessingJob {
     
     File file;
     SimpleStringProperty status = new SimpleStringProperty();  
-    DoubleProperty progress;
+    SimpleDoubleProperty progress = new SimpleDoubleProperty();
     
     
     public ImageProcessingJob() {
@@ -30,15 +31,19 @@ public class ImageProcessingJob {
 
     public ImageProcessingJob(File file) {
         this.file = file;
-        this.progress.add(0);
+        this.progress.set(0.0);
         this.status.set("P");
     }
 
     public File getFile() {
         return this.file;
     }
+    
+    public SimpleStringProperty getStatusProperty() {        
+        return this.status;
+    }
 
-    public ObservableValue<String> getStatusProperty() {
+    public ObservableValue<String> getStatusProperty2() {
         ObservableValue<String> result = null;
         result.addListener(new ChangeListener<String>() {        
             @Override
